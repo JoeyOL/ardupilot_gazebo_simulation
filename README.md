@@ -1,5 +1,5 @@
 # ardupilot_gazebo_simulation
-## 首先确保你的系统是Ubuntu 22.04并且装有ros2 humble版本，并建议将桌面等文件名改为英文(自行百度)
+## 首先确保你的系统是Ubuntu 22.04并且装有ros2 humble版本和mavros，并建议将桌面等文件名改为英文(自行百度)
 ## Step 1: 安装Micro XRCE DDS Gen
   - 打开一个新的终端，输入以下指令
     ```console
@@ -70,20 +70,61 @@
     rosdep install --from-paths src --ignore-src -r
     ```
 ## Build
-  - 在终端输入以下命令
+  - Build in ardupilot_gazebo
+    打开终端输入
+    ```console
+    sudo apt update
+    sudo apt install libgz-sim7-dev rapidjson-dev
+    cd ~/Deskardupilot_gazebo
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    make -j4
+    ```
+    编译完成后输入以下指令:
+    ```console
+    echo 'export GZ_SIM_SYSTEM_PLUGIN_PATH=$HOME/Desktop/ros2_ws/src/ardupilot_gazebo/build:${GZ_SIM_SYSTEM_PLUGIN_PATH}' >> ~/.bashrc
+    echo 'export GZ_SIM_RESOURCE_PATH=$HOME/Desktop/ros2_ws/src/ardupilot_gazebo/models:$HOME/Desktop/ros2_ws/src/ardupilot_gazebo/worlds:${GZ_SIM_RESOURCE_PATH}' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+    在终端输入下面指令出现gazebo界面即为完成:
+    ```console
+    gz sim -v4 -r iris_runway.sdf
+    ```
+    打开另一个终端输入下面指令将gazebo和ardupilotSITL连接:
+    ```console
+    sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --map --console
+    ```
+    可以在终端输入mode guided, arm throttle, takeoff 30看无人机是否会起飞
+    若各界面无报错即为成功
+  - Build in ros2_ws
+    在终端输入以下命令
     ```console
     cd ~Desktop/ros2_ws
     colcon build
     ```
     只要最后显示所以包都finished就行，有stderr输出不用管
+  - Build in ros_gz
+    ```console
+    cd ~Desktop/ros2_ws/src/ros_gz
+    colcon build
+    ```
+    输出所有包finished即可
   - 启动
     ```console
     source ~/Desktop/ros2_ws/install/setup.sh
     ros2 launch ardupilot_gz_bringup iris_runway.launch.py
     ```
     启动后正常应该有gazebo界面rivz界面，打开新终端输入ros2 topic list出现ap/话题等即为成功
-  - Build in ros_gz
+## Final:
+  - 将SITL_Models中的模型路径添加到$PATH中
     ```console
-    cd ~Desktop/ros2_ws/src/ros_gz
-    colcon build
-    ```
+    sudo gedit ~/.bashrc
+    # 将下面的命令添加到最后一行
+    export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:\
+    $HOME/Desktop/ros2_ws/src/SITL_Models/Gazebo/models:\
+    $HOME/Desktop/ros2_ws/src/SITL_Models/Gazebo/worlds
+
+    
+
+
+    
