@@ -123,7 +123,46 @@
     export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:\
     $HOME/Desktop/ros2_ws/src/SITL_Models/Gazebo/models:\
     $HOME/Desktop/ros2_ws/src/SITL_Models/Gazebo/worlds
-
+    ```
+  - 运行 Gazebo
+    ```console
+    gz sim -v4 -r skycat_with_camera_runway.sdf
+    ```
+  - 运行 Ardupilot SITL
+    ```console
+    sim_vehicle.py -v ArduPlane --model JSON --add-param-file=$HOME/SITL_Models/Gazebo/config/skycat_tvbs.param --console --map
+    ```
+  - 运行mavros节点
+    在mavros文件夹中找到mavros/launch/apm.launch
+    ```console
+    <arg name="fcu_url" default="/dev/ttyACM0:57600" />
+    换成
+    <arg name="fcu_url" default="udp://0.0.0.0:14550@" />
+    ```
+    在文件夹下启动终端，输入下面命令:
+    ```console
+    ros2 launch amp.launch
+    ```
+    在另一个终端输入下面命令
+    ```console
+    ros2 topic echo /mavros/state
+    ```
+    若输出connected: true即为连接成功
+  - 启动image_bridge节点
+    在终端输入
+    ```console
+    cd ~/Desktop/ros2_ws/src/ros_gz
+    ros2 run ros_gz_image image_bridge /camera
+    ```
+  - Check
+    在终端输入
+    ```console
+    ros2 topic list
+    ```
+    显示有/camera/...和/mavros/...即为成功，也可echo一下各话题查看消息
+    
+    
+    
     
 
 
