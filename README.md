@@ -130,7 +130,7 @@
     ```
   - 运行 Ardupilot SITL
     ```console
-    sim_vehicle.py -v ArduPlane --model JSON --add-param-file=$HOME/SITL_Models/Gazebo/config/skycat_tvbs.param --console --map
+    sim_vehicle.py -v ArduPlane --model JSON --add-param-file=$HOME/Desktop/ros2_ws/src/SITL_Models/Gazebo/config/skycat_tvbs.param --console --map
     ```
   - 运行mavros节点
     在mavros文件夹中找到mavros/launch/apm.launch
